@@ -66,7 +66,7 @@ class Loader(object):
 
    def __init__(self, fname):
       self.exe = fname
-      f = open(fname)
+      f = open(fname, 'rb')
       self.raw = f.read()
       self.md5 = hashlib.md5(self.raw).hexdigest()
       self.sha1 = hashlib.sha1(self.raw).hexdigest()
@@ -170,7 +170,7 @@ class Loader(object):
 
    def get_dword(self, addr):
       try:
-         return struct.unpack(self.endian + "I", self.get_bytes(addr, 4))[0]
+	 return struct.unpack(self.endian + "I", self.get_bytes(addr, 4))[0]
       except Exception, e:
          print "Unable to read dword from address 0x%x" % addr
          raise e
@@ -219,4 +219,10 @@ class Loader(object):
 
    def add_export(self, addr, name):
       self.exports_by_addr[addr] = name
+      
+   #override in subclasses if you have an algorithm
+   #for finding main given the address of start
+   #and all currently known instructions
+   def find_main(self, insts, to, frm):
+      return None
 
